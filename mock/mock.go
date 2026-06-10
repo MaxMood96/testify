@@ -470,7 +470,7 @@ func callString(method string, arguments Arguments, includeArgumentValues bool) 
 
 // Called tells the mock object that a method has been called, and gets an array
 // of arguments to return.  Panics if the call is unexpected (i.e. not preceded by
-// appropriate .On .Return() calls)
+// appropriate [Mock.On] calls)
 // If Call.WaitFor is set, blocks until the channel is closed or receives a message.
 func (m *Mock) Called(arguments ...interface{}) Arguments {
 	// get the calling function's name
@@ -493,7 +493,7 @@ func (m *Mock) Called(arguments ...interface{}) Arguments {
 
 // MethodCalled tells the mock object that the given method has been called, and gets
 // an array of arguments to return. Panics if the call is unexpected (i.e. not preceded
-// by appropriate .On .Return() calls)
+// by appropriate [Mock.On] calls)
 // If Call.WaitFor is set, blocks until the channel is closed or receives a message.
 func (m *Mock) MethodCalled(methodName string, arguments ...interface{}) Arguments {
 	m.mutex.Lock()
@@ -510,8 +510,7 @@ func (m *Mock) MethodCalled(methodName string, arguments ...interface{}) Argumen
 		// as the return arguments.  This is because:
 		//
 		//   a) this is a totally unexpected call to this method,
-		//   b) the arguments are not what was expected, or
-		//   c) the developer has forgotten to add an accompanying On...Return pair.
+		//   b) the arguments are not what was expected
 		closestCall, mismatch := m.findClosestCall(methodName, arguments...)
 		m.mutex.Unlock()
 
@@ -595,7 +594,7 @@ type assertExpectationiser interface {
 	AssertExpectations(TestingT) bool
 }
 
-// AssertExpectationsForObjects asserts that everything specified with On and Return
+// AssertExpectationsForObjects asserts that everything specified with [Mock.On]
 // of the specified objects was in fact called as expected.
 //
 // Calls may have occurred in any order.
@@ -618,7 +617,7 @@ func AssertExpectationsForObjects(t TestingT, testObjects ...interface{}) bool {
 	return true
 }
 
-// AssertExpectations asserts that everything specified with On and Return was
+// AssertExpectations asserts that everything specified with [Mock.On] was
 // in fact called as expected.  Calls may have occurred in any order.
 func (m *Mock) AssertExpectations(t TestingT) bool {
 	if s, ok := t.(interface{ Skipped() bool }); ok && s.Skipped() {
